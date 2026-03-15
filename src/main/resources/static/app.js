@@ -105,6 +105,14 @@ function setupEventListeners() {
         }
     });
 
+    // Delete ticket button
+    document.getElementById('delete-ticket-btn').addEventListener('click', () => {
+        const id = document.getElementById('ticket-id').value;
+        if (id) {
+            window.deleteTicket(id);
+        }
+    });
+
     // Drag and Drop
     const columns = document.querySelectorAll('.ticket-list');
     columns.forEach(col => {
@@ -380,8 +388,18 @@ function renderTimeline(tickets) {
 // Global scope for onclick
 window.deleteTicket = async function (id) {
     if (confirm('Are you sure you want to delete this ticket?')) {
-        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        await fetchTickets();
+        try {
+            const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                closeModal();
+                await fetchTickets();
+            } else {
+                alert("刪除失敗");
+            }
+        } catch (err) {
+            console.error("Delete error", err);
+            alert("刪除出錯");
+        }
     }
 }
 
@@ -526,6 +544,14 @@ function openModal(ticket = null) {
     updatedAtDisplay.textContent = ticket?.updatedAt ? formatDate(ticket.updatedAt) : 'N/A';
 
     document.getElementById('modal-title').textContent = ticket?.id ? `Edit Ticket ${ticket?.ticketIdentifier}` : 'Add New Ticket';
+
+    // Show/Hide Delete button based on whether it's an existing ticket
+    const deleteBtn = document.getElementById('delete-ticket-btn');
+    if (ticket?.id) {
+        deleteBtn.classList.remove('hidden');
+    } else {
+        deleteBtn.classList.add('hidden');
+    }
 
     currentSubtasks = ticket?.subTickets ? [...ticket.subTickets] : [];
     renderModalSubtasks();
