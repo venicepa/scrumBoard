@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrum Board</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css?v=4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+        <header class="app-header">
+            <div class="toolbar">
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="title-search" placeholder="Search by ID or title...">
+                </div>
+                <div id="filter-bar" class="filter-bar"></div>
+                <button id="add-ticket-btn" class="btn primary"><i class="fa-solid fa-plus"></i> New Ticket</button>
+            </div>
+
+            <!-- Expiry Timeline -->
+            <div id="expiry-timeline" class="timeline-container">
+                <div class="timeline-line"></div>
+                <div class="today-marker">
+                    <div class="today-label">Today</div>
+                    <div id="today-date-display" class="today-date"></div>
+                </div>
+                <div id="timeline-flags" class="timeline-flags-layer"></div>
+            </div>
+        </header>
+
+        <main class="board">
+        <div class="column" id="TODO" data-status="TODO">
+            <h2 class="column-header">To Do <span>0</span></h2>
+            <div class="ticket-list"></div>
+        </div>
+        <div class="column" id="IN_PROGRESS" data-status="IN_PROGRESS">
+            <h2 class="column-header">In Progress <span>0</span></h2>
+            <div class="ticket-list"></div>
+        </div>
+        <div class="column" id="CODE_REVIEW" data-status="CODE_REVIEW">
+            <h2 class="column-header">Code Review <span>0</span></h2>
+            <div class="ticket-list"></div>
+        </div>
+        <div class="column" id="DONE" data-status="DONE">
+            <h2 class="column-header">Done <span>0</span></h2>
+            <div class="ticket-list"></div>
+        </div>
+    </main>
+
+    <!-- Modal for adding/editing tickets -->
+    <div id="ticket-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modal-title">Add New Ticket</h3>
+                    <div id="ticket-id-display" class="ticket-id-badge"></div>
+                </div>
+                <button class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="ticket-form">
+                <input type="hidden" id="ticket-id">
+                <div class="modal-body-layout">
+                    <div class="modal-col-left">
+                        <div class="modal-metadata-row">
+                            <div class="meta-item">
+                                <i class="fa-regular fa-calendar"></i>
+                                <span class="meta-label">建立時間:</span>
+                                <span id="ticket-created-at-display">Auto-generated</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                <span class="meta-label">修改時間:</span>
+                                <span id="ticket-updated-at-display">N/A</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="ticket-identifier">
+
+                        <div class="form-group">
+                            <label for="ticket-title">Title</label>
+                            <input type="text" id="ticket-title" required autocomplete="off">
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="ticket-tag">Tag</label>
+                                <input type="text" id="ticket-tag" placeholder="Tag..." autocomplete="off">
+                                <div id="tag-pool" class="tag-pool"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="ticket-status">Status</label>
+                                <select id="ticket-status">
+                                    <option value="TODO">To Do</option>
+                                    <option value="IN_PROGRESS">In Progress</option>
+                                    <option value="CODE_REVIEW">Code Review</option>
+                                    <option value="DONE">Done</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="ticket-creator">Creator</label>
+                                <input type="text" id="ticket-creator" list="team-members" placeholder="Select or type..."
+                                    autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="ticket-assignee">Assignee</label>
+                                <input type="text" id="ticket-assignee" list="team-members" placeholder="Select or type..."
+                                    autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="ticket-expired-date">Expired Date</label>
+                                <input type="datetime-local" id="ticket-expired-date">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 1.5rem; border-top: 1px solid #334155; padding-top: 1rem;">
+                            <label style="font-size: 1.1rem; color: #cbd5e1;"><i class="fa-solid fa-code-branch"></i>
+                                Sub-Tickets</label>
+                            <div id="subtask-list"></div>
+                            <div class="subtask-input-group">
+                                <input type="text" id="new-subtask-title" placeholder="Quick add a new sub-ticket...">
+                                <button type="button" id="add-subtask-btn" class="btn secondary"><i
+                                        class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-col-right">
+                        <div class="form-group" style="height: 100%; display: flex; flex-direction: column;">
+                            <label for="ticket-desc">Description</label>
+                            <textarea id="ticket-desc" style="flex: 1; min-height: 300px; resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn secondary close-btn">Cancel</button>
+                    <button type="submit" class="btn primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/app.js?v=21"></script>
+</body>
+
+</html>
