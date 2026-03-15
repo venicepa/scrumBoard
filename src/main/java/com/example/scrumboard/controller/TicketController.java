@@ -30,7 +30,7 @@ public class TicketController {
                 .filter(s -> !s.isEmpty())
                 .distinct()
                 .sorted()
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/assignees")
@@ -39,7 +39,7 @@ public class TicketController {
                 .filter(s -> s != null && !s.isEmpty())
                 .distinct()
                 .sorted()
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
